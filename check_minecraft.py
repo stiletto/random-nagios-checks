@@ -11,8 +11,8 @@ parser = argparse.ArgumentParser('Check minecraft server status')
 parser.add_argument('-H','--host', help='Server IP or hostname', required=True)
 parser.add_argument('-p', '--port', help='Server port', type=int, default=25565)
 parser.add_argument('-s', '--version', help='Minecraft Protocol version', choices=['beta','1.4','1.6'], default='1.6')
-parser.add_argument('-w', '--warning', help='User count warning threshold (fraction of max players, 0.0-1.0)', type=float, default=0.75)
-parser.add_argument('-c', '--critical', help='User count critical threshold (fraction of max players, 0.0-1.0)', type=float, default=0.99)
+parser.add_argument('-w', '--warning', help='Player count warning threshold (fraction of max players, 0.0-1.0)', type=float, default=0.75)
+parser.add_argument('-c', '--critical', help='Player count critical threshold (fraction of max players, 0.0-1.0)', type=float, default=0.99)
 
 args = parser.parse_args()
 #print time.time()-st,'pa'
