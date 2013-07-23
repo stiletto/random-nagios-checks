@@ -10,7 +10,7 @@ parser = argparse.ArgumentParser('Check minecraft server status')
 
 parser.add_argument('-H','--host', help='Server IP or hostname', required=True)
 parser.add_argument('-p', '--port', help='Server port', type=int, default=25565)
-parser.add_argument('-s', '--version', help='Minecraft Protocol version', choices=['beta','1.4','1.6'], default='1.6')
+parser.add_argument('-s', '--version', help='Minecraft Protocol version', choices=['beta','1.4','1.6', '1.6.2'], default='1.6.2')
 parser.add_argument('-w', '--warning', help='Player count warning threshold (fraction of max players, 0.0-1.0)', type=float, default=0.75)
 parser.add_argument('-c', '--critical', help='Player count critical threshold (fraction of max players, 0.0-1.0)', type=float, default=0.99)
 
@@ -31,7 +31,7 @@ try:
 
     sf = soc.makefile()
 
-    if args.version in ('1.6', '1.4'):
+    if args.version in ('1.6.2', '1.4'):
         payload = struct.pack('>BHsI', 73, len(args.host), args.host.encode('utf-16be'), args.port)
 
         plugname = u"MC|PingHost"
@@ -58,7 +58,11 @@ try:
             exit('CRITICAL', 'Couldn\'t decode payload %s: %s' % (repr(payload),str(e)))
         assertcrit(len(payload) == paylen, 'Protocol mismatch. Wrong length')
 
-        if args.version == '1.6':
+        if args.version == '1.6.2':
+            payload = payload.split(u'\x00')
+            assertcrit(len(payload) == 6, 'Protocol mismatch. Wrong number of fields in payload. %s' % (repr(payload)))
+            version, motd, players, playermax = payload[2], payload[3], int(payload[4]), int(payload[5])
+        elif args.version == '1.6':
             payload = payload.split(u'§')
             assertcrit(len(payload) == 3, 'Protocol mismatch. Wrong number of fields in payload. %s' % (repr(payload)))
             version, motd, players, playermax = '1.6.x', payload[0], int(payload[1]), int(payload[2])
